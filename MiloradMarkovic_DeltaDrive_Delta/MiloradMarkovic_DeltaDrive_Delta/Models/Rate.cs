@@ -1,0 +1,6 @@
+﻿namespace MiloradMarkovic_DeltaDrive_Delta.Models
+{
+    public class Rate
+    {
+    }
+}
