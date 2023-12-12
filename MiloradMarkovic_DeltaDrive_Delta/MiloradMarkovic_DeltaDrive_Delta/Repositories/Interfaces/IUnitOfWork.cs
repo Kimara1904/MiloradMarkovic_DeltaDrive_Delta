@@ -1,6 +1,6 @@
 ﻿using MiloradMarkovic_DeltaDrive_Delta.Models;
 
-namespace MiloradMarkovic_DeltaDrive_Delta.Interfaces
+namespace MiloradMarkovic_DeltaDrive_Delta.Repositories.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {

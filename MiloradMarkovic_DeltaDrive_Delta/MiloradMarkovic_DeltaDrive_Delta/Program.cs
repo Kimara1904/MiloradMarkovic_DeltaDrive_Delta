@@ -1,7 +1,9 @@
+using Exceptions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MiloradMarkovic_DeltaDrive_Delta.Infrastructure;
-using MiloradMarkovic_DeltaDrive_Delta.Interfaces;
 using MiloradMarkovic_DeltaDrive_Delta.Repositories;
+using MiloradMarkovic_DeltaDrive_Delta.Repositories.Interfaces;
 using MiloradMarkovic_DeltaDrive_Delta.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,12 @@ builder.Services.AddScoped<DbContext, DriveDatabaseContext>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddHostedService<LoadDataService>();
+builder.Services.AddScoped<ExceptionHandler>();
+builder.Services.AddScoped(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
+
+var configuration = new ConfigurationBuilder()
+        .SetBasePath(builder.Environment.ContentRootPath)
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 var app = builder.Build();
 
@@ -29,6 +37,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionHandler>();
 
 app.MapControllers();
 

@@ -1,4 +1,4 @@
-﻿namespace MiloradMarkovic_DeltaDrive_Delta.Interfaces
+﻿namespace MiloradMarkovic_DeltaDrive_Delta.Repositories.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {

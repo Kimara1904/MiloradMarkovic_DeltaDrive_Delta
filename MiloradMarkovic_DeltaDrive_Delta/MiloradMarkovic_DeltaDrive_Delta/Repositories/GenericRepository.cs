@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MiloradMarkovic_DeltaDrive_Delta.Interfaces;
+using MiloradMarkovic_DeltaDrive_Delta.Repositories.Interfaces;
 
 namespace MiloradMarkovic_DeltaDrive_Delta.Repositories
 {
