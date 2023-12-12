@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MiloradMarkovic_DeltaDrive_Delta.Infrastructure;
 using MiloradMarkovic_DeltaDrive_Delta.Interfaces;
 using MiloradMarkovic_DeltaDrive_Delta.Repositories;
+using MiloradMarkovic_DeltaDrive_Delta.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<DriveDatabaseContext>(opt => opt.UseSqlServer(buil
 builder.Services.AddScoped<DbContext, DriveDatabaseContext>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddHostedService<LoadDataService>();
 
 var app = builder.Build();
 
