@@ -1,3 +1,13 @@
+using AutoMapper;
+using Exceptions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using MiloradMarkovic_DeltaDrive_Delta.Infrastructure;
+using MiloradMarkovic_DeltaDrive_Delta.Mapper;
+using MiloradMarkovic_DeltaDrive_Delta.Repositories;
+using MiloradMarkovic_DeltaDrive_Delta.Repositories.Interfaces;
+using MiloradMarkovic_DeltaDrive_Delta.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
