@@ -20,6 +20,7 @@ builder.Services.AddSwaggerGen();
 var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new VehicleProfile());
+    mc.AddProfile(new PassengerProfile());
 });
 
 IMapper mapper = mapperConfig.CreateMapper();
