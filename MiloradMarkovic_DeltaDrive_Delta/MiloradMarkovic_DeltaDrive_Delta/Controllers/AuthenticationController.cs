@@ -24,7 +24,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Controllers
             return Ok(new TokenDTO { Token = token });
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         [AllowAnonymous]
         public async Task<ActionResult<string>> Register(RegisterDTO newPassenger)
         {
