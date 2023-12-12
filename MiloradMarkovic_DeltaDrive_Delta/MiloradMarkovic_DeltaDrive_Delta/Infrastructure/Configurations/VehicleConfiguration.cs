@@ -19,6 +19,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Infrastructure.Configurations
             });
             builder.Property(x => x.StartPrice).IsRequired();
             builder.Property(x => x.PricePerKM).IsRequired();
+            builder.Property(x => x.IsBooked).HasDefaultValue(false);
         }
     }
 }
