@@ -1,53 +1,35 @@
-﻿using CsvHelper;
-using MiloradMarkovic_DeltaDrive_Delta.Models;
-using MiloradMarkovic_DeltaDrive_Delta.Repositories.Interfaces;
-using System.Globalization;
-
-namespace MiloradMarkovic_DeltaDrive_Delta.Services
+﻿namespace MiloradMarkovic_DeltaDrive_Delta.Services
 {
     public class LoadDataService : BackgroundService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly IHostApplicationLifetime _applicationLifetime;
+        private readonly IMapper _mapper;
 
-        public LoadDataService(IUnitOfWork unitOfWork, IHostApplicationLifetime applicationLifetime)
+        public LoadDataService(IServiceScopeFactory serviceScopeFactory, IHostApplicationLifetime applicationLifetime, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _scopeFactory = serviceScopeFactory;
             _applicationLifetime = applicationLifetime;
-
+            _mapper = mapper;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _applicationLifetime.ApplicationStarted.Register(() =>
+            _applicationLifetime.ApplicationStarted.Register(async () =>
             {
                 stoppingToken.ThrowIfCancellationRequested();
 
-                var records = new List<Vehicle>();
-                using var reader = new StreamReader("../../../../../delta-drive.csv");
+                using var reader = new StreamReader("../../delta-drive.csv");
                 using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
 
-                while (csv.Read())
-                {
-                    var record = new Vehicle()
-                    {
-                        Brand = csv.GetField("brand") ?? throw new Exception("Can't find field 'brand'."),
-                        DriversFirstName = csv.GetField("firstName") ?? throw new Exception("Can't find field 'firstName'."),
-                        DriversLastName = csv.GetField("lastName") ?? throw new Exception("Can't find field 'lastName'."),
-                        Location = new Location()
-                        {
-                            Latitude = double.Parse(csv.GetField("latitude") ?? throw new Exception("Can't find field 'latitude'.")),
-                            Longitude = double.Parse(csv.GetField("longitude") ?? throw new Exception("Can't find field 'longitude'."))
-                        },
-                        StartPrice = double.Parse(csv.GetField("startPrice") ?? throw new Exception("Can't find field 'startPrice'.")),
-                        PricePerKM = double.Parse(csv.GetField("pricePerKM") ?? throw new Exception("Can't find field 'pricePerKM'."))
-                    };
+                var records = csv.GetRecords<CSVVehicle>();
 
-                    records.Add(record);
-                }
+                var dbRange = _mapper.Map<IEnumerable<CSVVehicle>, IEnumerable<Vehicle>>(records);
 
-                _unitOfWork._vehicleRepository.AddRange(records);
-                _unitOfWork.Save();
+                using var scope = _scopeFactory.CreateScope();
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+                await unitOfWork._vehicleRepository.AddRange(dbRange);
+                await unitOfWork.Save();
             });
 
             return Task.CompletedTask;

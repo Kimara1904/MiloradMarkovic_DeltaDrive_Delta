@@ -15,7 +15,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Repositories
         public async Task AddRange(IEnumerable<T> entities)
         {
             var data = await _context.Set<T>().ToListAsync();
-            if (data.Count > 0)
+            if (data.Count == 0)
             {
                 await _context.Set<T>().AddRangeAsync(entities);
             }

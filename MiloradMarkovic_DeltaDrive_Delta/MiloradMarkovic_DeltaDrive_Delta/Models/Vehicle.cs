@@ -9,6 +9,7 @@
         public Location Location { get; set; } = null!;
         public double StartPrice { get; set; }
         public double PricePerKM { get; set; }
+        public bool IsBooked { get; set; }
         public virtual List<Rate> Rates { get; set; } = null!;
         public virtual List<HistoryPreviewItem> HistoryPreviews { get; set; } = null!;
     }
