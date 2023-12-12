@@ -28,12 +28,12 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<string> Login(string email, string password)
+        public async Task<string> Login(LoginDTO login)
         {
             var passengers = await _unitOfWork._passengerRepository.GetAllAsync();
             var passenger = passengers
-                .Where(p => p.Email.Equals(email) && _passwordHasher.VerifyHashedPassword(p, p.Password, password) == PasswordVerificationResult.Success)
-                .FirstOrDefault() ?? throw new NotFoundException($"There is no user with email: {email} and password {password}.");
+                .Where(p => p.Email.Equals(login.Email) && _passwordHasher.VerifyHashedPassword(p, p.Password, login.Password) == PasswordVerificationResult.Success)
+                .FirstOrDefault() ?? throw new NotFoundException($"There is no user with email: {login.Email} and password {login.Password}.");
 
             var claims = new[] {
                         new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"] ?? "default"),

@@ -4,7 +4,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<string> Login(string email, string password);
+        Task<string> Login(LoginDTO login);
         Task Register(RegisterDTO newPassenger);
     }
 }
