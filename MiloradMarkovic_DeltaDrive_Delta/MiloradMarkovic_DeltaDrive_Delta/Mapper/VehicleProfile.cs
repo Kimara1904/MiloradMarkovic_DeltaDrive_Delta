@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MiloradMarkovic_DeltaDrive_Delta.DTOs;
 using MiloradMarkovic_DeltaDrive_Delta.Models;
 
 namespace MiloradMarkovic_DeltaDrive_Delta.Mapper
@@ -17,6 +18,10 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Mapper
                 }))
                 .ForMember(dest => dest.StartPrice, opt => opt.MapFrom(src => double.Parse(src.StartPrice.Replace("EUR", ""))))
                 .ForMember(dest => dest.PricePerKM, opt => opt.MapFrom(src => double.Parse(src.PricePerKM.Replace("EUR", ""))));
+
+            CreateMap<Vehicle, AvailableVehicleDTO>();
+            CreateMap<Vehicle, VehicleDTO>();
+            CreateMap<Vehicle, VehicleDetailDTO>();
         }
     }
 }
