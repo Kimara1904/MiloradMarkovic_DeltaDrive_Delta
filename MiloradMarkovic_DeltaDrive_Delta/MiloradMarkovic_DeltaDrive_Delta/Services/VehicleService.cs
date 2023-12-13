@@ -22,9 +22,40 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
             _mapper = mapper;
         }
 
-        public Task<bool> BookVehicle(BookVehicleDTO bookVehicle)
+        public async Task<bool> BookVehicle(int PassengerId, BookVehicleDTO bookVehicle)
         {
-            throw new NotImplementedException();
+            var passenger = await _unitOfWork._passengerRepository.FindAsync(PassengerId)
+                ?? throw new NotFoundException("This user doesn't exist.");
+            var vehicleQuery = await _unitOfWork._vehicleRepository.GetAllAsync();
+            var vehicle = vehicleQuery.Where(x => x.Id == bookVehicle.Id && !x.IsBooked).FirstOrDefault()
+                ?? throw new NotFoundException($"There is no available vehicle with id: {bookVehicle.Id}.");
+
+            double random = new Random().NextDouble();
+
+            if (random <= .25)
+            {
+                return false;
+            }
+
+            vehicle.IsBooked = true;
+
+            var distance = await _geoCalculator.CalculateDistance(bookVehicle.Start.Latitude, bookVehicle.Start.Longitude, bookVehicle.Destination.Latitude, bookVehicle.Destination.Longitude);
+            var historyPreviewItem = new HistoryPreviewItem
+            {
+                StartingLocation = bookVehicle.Start,
+                EndingLocation = bookVehicle.Destination,
+                DateTime = DateTime.UtcNow,
+                VehicleId = bookVehicle.Id,
+                PassengerId = PassengerId,
+                TotalPrice = vehicle.StartPrice + (vehicle.PricePerKM * distance)
+            };
+
+            //location
+
+            await _unitOfWork._historyPreviewItemRepository.Insert(historyPreviewItem);
+            _unitOfWork._vehicleRepository.Update(vehicle);
+
+            return true;
         }
 
         public async Task<List<AvailableVehicleDTO>> GetAvailableVehicles(AvailableVehicleLocationsDTO locations)
@@ -68,7 +99,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
         public async Task RateVehicle(int passengerId, RateVehicleDTO rateVehicle)
         {
-            var passenger = await _unitOfWork._passengerRepository.FindAsync(passengerId) ?? throw new NotFoundException("This passenger doesn't exists.");
+            var passenger = await _unitOfWork._passengerRepository.FindAsync(passengerId) ?? throw new NotFoundException("This passenger doesn't exist.");
             var vehicle = await _unitOfWork._vehicleRepository.FindAsync(rateVehicle.VehicleId) ?? throw new NotFoundException($"There is no vehicle with id: {rateVehicle.VehicleId}");
 
             var rate = _mapper.Map<Rate>(rateVehicle);
