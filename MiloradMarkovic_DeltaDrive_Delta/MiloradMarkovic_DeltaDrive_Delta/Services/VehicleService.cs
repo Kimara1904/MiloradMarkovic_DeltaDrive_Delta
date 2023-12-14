@@ -82,6 +82,21 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
             return availableVehicle;
         }
 
+        public async Task<List<HistoryPreviewDTO>> GetHistoryPreview(int id)
+        {
+            var historyQuery = await _unitOfWork._historyPreviewItemRepository.GetAllAsync();
+            var history = historyQuery.Where(x => x.PassengerId == id).Include(x => x.Passenger).Include(x => x.Vehicle).OrderBy(x => x.DateTime).ToList();
+
+            var returnVal = _mapper.Map<List<HistoryPreviewDTO>>(history);
+
+            returnVal.ForEach(historyItem =>
+            {
+                historyItem.PassengerEmail.Equals(history[0].Passenger.Email);
+            });
+
+            return returnVal;
+        }
+
         public async Task<List<RatesPreviewDTO>> GetRatesPreview(int id)
         {
             var previewsQuery = await _unitOfWork._rateRepository.GetAllAsync();

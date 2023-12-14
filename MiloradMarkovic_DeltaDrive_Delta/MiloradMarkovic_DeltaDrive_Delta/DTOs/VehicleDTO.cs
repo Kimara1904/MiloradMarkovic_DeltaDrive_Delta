@@ -6,6 +6,5 @@
         public string Brand { get; set; } = null!;
         public string DriverFirstName { get; set; } = null!;
         public string DriverLastName { get; set; } = null!;
-        public bool IsBooked { get; set; }
     }
 }
