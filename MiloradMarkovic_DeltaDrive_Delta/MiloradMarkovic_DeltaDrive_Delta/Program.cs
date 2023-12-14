@@ -56,6 +56,8 @@ var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new VehicleProfile());
     mc.AddProfile(new PassengerProfile());
+    mc.AddProfile(new RatesProfile());
+    mc.AddProfile(new HistoryProfile());
 });
 
 IMapper mapper = mapperConfig.CreateMapper();
@@ -67,6 +69,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddHostedService<LoadDataService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<ExceptionHandler>();
 builder.Services.AddScoped(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
 builder.Services.AddFluentValidationAutoValidation();
