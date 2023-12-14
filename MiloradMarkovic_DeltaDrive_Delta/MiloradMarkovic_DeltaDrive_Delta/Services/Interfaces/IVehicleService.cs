@@ -9,6 +9,5 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services.Interfaces
         Task<List<RatesPreviewDTO>> GetRatesPreview(int id);
         Task RateVehicle(int PassengerId, RateVehicleDTO rateVehicle);
         Task<VehicleDetailDTO> GetVehicleById(int id);
-        Task<List<HistoryPreviewDTO>> GetHistoryPreview(int id);
     }
 }

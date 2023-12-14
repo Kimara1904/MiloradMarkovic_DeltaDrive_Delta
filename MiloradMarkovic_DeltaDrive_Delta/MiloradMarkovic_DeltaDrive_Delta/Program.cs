@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MiloradMarkovic_DeltaDrive_Delta.Helpers;
+using MiloradMarkovic_DeltaDrive_Delta.Helpers.Interfaces;
 using MiloradMarkovic_DeltaDrive_Delta.Infrastructure;
 using MiloradMarkovic_DeltaDrive_Delta.Mapper;
 using MiloradMarkovic_DeltaDrive_Delta.Repositories;
@@ -69,7 +71,9 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddHostedService<LoadDataService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IGeoCalculator, GeoCalculator>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IPassengerService, PassengerService>();
 builder.Services.AddScoped<ExceptionHandler>();
 builder.Services.AddScoped(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
 builder.Services.AddFluentValidationAutoValidation();
