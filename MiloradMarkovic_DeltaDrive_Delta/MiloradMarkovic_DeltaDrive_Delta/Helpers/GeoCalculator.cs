@@ -5,7 +5,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Helpers
 {
     public class GeoCalculator : IGeoCalculator
     {
-        public async Task<double> CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        public double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
             var Coord1 = new GeoCoordinate(lat1, lon1);
             var Coord2 = new GeoCoordinate(lat2, lon2);

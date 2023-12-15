@@ -6,8 +6,8 @@ namespace MiloradMarkovic_DeltaDrive_Delta.DTOs
     {
         public int Id { get; set; }
         public string Brand { get; set; } = null!;
-        public string DriverFirstName { get; set; } = null!;
-        public string DriverLastName { get; set; } = null!;
+        public string DriversFirstName { get; set; } = null!;
+        public string DriversLastName { get; set; } = null!;
         public bool IsBooked { get; set; }
         public Location Location { get; set; } = null!;
     }

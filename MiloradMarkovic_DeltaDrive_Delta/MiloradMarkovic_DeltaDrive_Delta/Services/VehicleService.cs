@@ -39,12 +39,12 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
             vehicle.IsBooked = true;
 
-            var distance = await _geoCalculator.CalculateDistance(bookVehicle.Start.Latitude, bookVehicle.Start.Longitude, bookVehicle.Destination.Latitude, bookVehicle.Destination.Longitude);
+            var distance = _geoCalculator.CalculateDistance(bookVehicle.Start.Latitude, bookVehicle.Start.Longitude, bookVehicle.Destination.Latitude, bookVehicle.Destination.Longitude);
             var historyPreviewItem = new HistoryPreviewItem
             {
                 StartingLocation = bookVehicle.Start,
                 EndingLocation = bookVehicle.Destination,
-                DateTime = DateTime.UtcNow,
+                StartTime = DateTime.UtcNow,
                 VehicleId = bookVehicle.Id,
                 PassengerId = PassengerId,
                 TotalPrice = vehicle.StartPrice + (vehicle.PricePerKM * distance)
@@ -60,32 +60,36 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
         public async Task<List<AvailableVehicleDTO>> GetAvailableVehicles(AvailableVehicleLocationsDTO locations)
         {
-            var vehiclesQuery = await _unitOfWork._vehicleRepository.GetAllAsync();
-            var vehicles = vehiclesQuery.Where(x => !x.IsBooked).Include(x => x.Rates)
+            var vehicles = (await _unitOfWork._vehicleRepository.GetAllAsync())
+                .Where(x => !x.IsBooked)
+                .Include(x => x.Rates)
                 .OrderBy(x => _geoCalculator.CalculateDistance(locations.PassengersLocation.Latitude, locations.PassengersLocation.Longitude, x.Location.Latitude, x.Location.Longitude))
-                .Take(10).ToList();
+                .Take(10)
+                .ToList();
 
             var availableVehicle = _mapper.Map<List<AvailableVehicleDTO>>(vehicles);
 
-            var tasks = availableVehicle.Select(async vehicle =>
+            availableVehicle.ForEach(vehicle =>
             {
                 var tempVehicle = vehicles.FirstOrDefault(x => x.Id == vehicle.Id) ?? throw new NotFoundException("Error with finding vahicle.");
-                //multiply by 1000 because we're looking for meters
-                vehicle.DistanceToPassenger = 1000 * await _geoCalculator.CalculateDistance(locations.PassengersLocation.Latitude, locations.PassengersLocation.Longitude, tempVehicle.Location.Latitude, tempVehicle.Location.Longitude);
-                vehicle.Rating = tempVehicle.Rates.Average(x => x.Rating);
-                var distance = await _geoCalculator.CalculateDistance(locations.PassengersLocation.Latitude, locations.PassengersLocation.Longitude, locations.DistanceLocation.Latitude, locations.DistanceLocation.Longitude);
-                vehicle.TotalPrice = vehicle.StartPrice + (vehicle.PricePerKM * distance);
+                vehicle.DistanceToPassenger = Math.Round(_geoCalculator.CalculateDistance(locations.PassengersLocation.Latitude, locations.PassengersLocation.Longitude, tempVehicle.Location.Latitude, tempVehicle.Location.Longitude), 1);
+                vehicle.Rating = tempVehicle.Rates.Any() ? tempVehicle.Rates.Average(x => x.Rating) : 0;
+                var distance = Math.Round(_geoCalculator.CalculateDistance(locations.PassengersLocation.Latitude, locations.PassengersLocation.Longitude, locations.DistanceLocation.Latitude, locations.DistanceLocation.Longitude), 2);
+                vehicle.StartPrice = Math.Round(vehicle.StartPrice, 2);
+                vehicle.PricePerKM = Math.Round(vehicle.PricePerKM, 2);
+                vehicle.TotalPrice = Math.Round(vehicle.StartPrice + (vehicle.PricePerKM * distance), 2);
             });
-
-            await Task.WhenAll(tasks);
 
             return availableVehicle;
         }
 
         public async Task<List<RatesPreviewDTO>> GetRatesPreview(int id)
         {
-            var previewsQuery = await _unitOfWork._rateRepository.GetAllAsync();
-            var previews = previewsQuery.Where(x => x.Id == id).Include(x => x.Vehicle).Include(x => x.Passenger).ToList();
+            var previews = (await _unitOfWork._rateRepository.GetAllAsync())
+                .Where(x => x.Id == id)
+                .Include(x => x.Vehicle)
+                .Include(x => x.Passenger)
+                .ToList();
 
             return _mapper.Map<List<RatesPreviewDTO>>(previews);
         }
@@ -101,6 +105,13 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
         {
             var passenger = await _unitOfWork._passengerRepository.FindAsync(passengerId) ?? throw new NotFoundException("This passenger doesn't exist.");
             var vehicle = await _unitOfWork._vehicleRepository.FindAsync(rateVehicle.VehicleId) ?? throw new NotFoundException($"There is no vehicle with id: {rateVehicle.VehicleId}");
+
+            var today = DateTime.Today;
+
+            var historyPrewiew = (await _unitOfWork._historyPreviewItemRepository.GetAllAsync())
+                .Where(x => x.IsArrived && x.PassengerId == passenger.Id && x.VehicleId == vehicle.Id)
+                .FirstOrDefault()
+                ?? throw new NotFoundException($"Passinger with id: {passenger.Id} didn't arrived on destination with vehicle with id: {vehicle.Id}");
 
             var rate = _mapper.Map<Rate>(rateVehicle);
             rate.VehicleId = vehicle.Id;

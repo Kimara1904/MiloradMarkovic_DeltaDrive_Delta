@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiloradMarkovic_DeltaDrive_Delta.Infrastructure;
 
@@ -11,9 +12,11 @@ using MiloradMarkovic_DeltaDrive_Delta.Infrastructure;
 namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
 {
     [DbContext(typeof(DriveDatabaseContext))]
-    partial class DriveDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20231215153919_ModifyHistoryPreviewEntityMigration")]
+    partial class ModifyHistoryPreviewEntityMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

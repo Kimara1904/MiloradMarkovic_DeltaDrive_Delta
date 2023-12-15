@@ -2,6 +2,6 @@
 {
     public interface IGeoCalculator
     {
-        Task<double> CalculateDistance(double lat1, double lon1, double lat2, double lon2);
+        double CalculateDistance(double lat1, double lon1, double lat2, double lon2);
     }
 }

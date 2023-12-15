@@ -10,6 +10,8 @@ namespace MiloradMarkovic_DeltaDrive_Delta.DTOs
         public double TotalPrice { get; set; }
         public string PassengerEmail { get; set; } = null!;
         public VehicleDTO Vehicle { get; set; } = null!;
-        public DateTime DateTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public bool IsArrived { get; set; }
     }
 }

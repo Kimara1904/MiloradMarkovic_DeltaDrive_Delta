@@ -20,7 +20,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
         public async Task<List<HistoryPreviewDTO>> GetHistoryPreview(int id)
         {
             var historyQuery = await _unitOfWork._historyPreviewItemRepository.GetAllAsync();
-            var history = historyQuery.Where(x => x.PassengerId == id).Include(x => x.Passenger).Include(x => x.Vehicle).OrderBy(x => x.DateTime).ToList();
+            var history = historyQuery.Where(x => x.PassengerId == id).Include(x => x.Passenger).Include(x => x.Vehicle).OrderBy(x => x.StartTime).ToList();
 
             var returnVal = _mapper.Map<List<HistoryPreviewDTO>>(history);
 

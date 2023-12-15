@@ -20,7 +20,8 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Infrastructure.Configurations
                 sa.Property(l => l.Longitude).IsRequired().HasColumnName("EndLongitude");
             });
             builder.Property(x => x.TotalPrice).IsRequired();
-            builder.Property(x => x.DateTime).IsRequired();
+            builder.Property(x => x.StartTime).IsRequired();
+            builder.Property(x => x.IsArrived).HasDefaultValue(false);
             builder.HasOne(x => x.Passenger).WithMany(p => p.HistoryPreviews).HasForeignKey(x => x.PassengerId);
             builder.HasOne(x => x.Vehicle).WithMany(v => v.HistoryPreviews).HasForeignKey(x => x.VehicleId);
         }

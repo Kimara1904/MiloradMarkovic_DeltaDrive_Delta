@@ -10,6 +10,8 @@
         public virtual Passenger Passenger { get; set; } = null!;
         public int VehicleId { get; set; }
         public virtual Vehicle Vehicle { get; set; } = null!;
-        public DateTime DateTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public bool IsArrived { get; set; }
     }
 }
