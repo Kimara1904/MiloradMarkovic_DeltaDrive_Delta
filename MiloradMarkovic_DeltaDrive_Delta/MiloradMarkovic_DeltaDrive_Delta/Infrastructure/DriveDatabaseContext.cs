@@ -8,7 +8,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Infrastructure
         public DbSet<Passenger> Passengers { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Rate> Rates { get; set; }
-        public DbSet<HistoryPreviewItem> History { get; set; }
+        public DbSet<Ride> History { get; set; }
 
         public DriveDatabaseContext(DbContextOptions<DriveDatabaseContext> options) : base(options)
         {

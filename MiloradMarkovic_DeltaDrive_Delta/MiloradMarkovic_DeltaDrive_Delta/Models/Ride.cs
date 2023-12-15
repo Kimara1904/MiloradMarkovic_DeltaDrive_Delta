@@ -1,6 +1,6 @@
 ﻿namespace MiloradMarkovic_DeltaDrive_Delta.Models
 {
-    public class HistoryPreviewItem
+    public class Ride
     {
         public int Id { get; set; }
         public Location StartingLocation { get; set; } = null!;

@@ -8,7 +8,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Mapper
     {
         public HistoryProfile()
         {
-            CreateMap<HistoryPreviewItem, HistoryPreviewDTO>();
+            CreateMap<Ride, HistoryPreviewDTO>();
         }
     }
 }

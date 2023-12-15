@@ -4,9 +4,9 @@ using MiloradMarkovic_DeltaDrive_Delta.Models;
 
 namespace MiloradMarkovic_DeltaDrive_Delta.Infrastructure.Configurations
 {
-    public class HistoryPreviewItemConfiguration : IEntityTypeConfiguration<HistoryPreviewItem>
+    public class RideConfiguration : IEntityTypeConfiguration<Ride>
     {
-        public void Configure(EntityTypeBuilder<HistoryPreviewItem> builder)
+        public void Configure(EntityTypeBuilder<Ride> builder)
         {
             builder.HasKey(x => x.Id);
             builder.OwnsOne(x => x.StartingLocation, sa =>

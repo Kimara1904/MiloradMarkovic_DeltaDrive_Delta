@@ -14,12 +14,14 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IGeoCalculator _geoCalculator;
         private readonly IMapper _mapper;
+        private readonly IListService _listService;
 
-        public VehicleService(IUnitOfWork unitOfWork, IGeoCalculator geoCalculator, IMapper mapper)
+        public VehicleService(IUnitOfWork unitOfWork, IGeoCalculator geoCalculator, IMapper mapper, IListService listService)
         {
             _unitOfWork = unitOfWork;
             _geoCalculator = geoCalculator;
             _mapper = mapper;
+            _listService = listService;
         }
 
         public async Task<bool> BookVehicle(int PassengerId, BookVehicleDTO bookVehicle)
@@ -40,7 +42,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
             vehicle.IsBooked = true;
 
             var distance = _geoCalculator.CalculateDistance(bookVehicle.Start.Latitude, bookVehicle.Start.Longitude, bookVehicle.Destination.Latitude, bookVehicle.Destination.Longitude);
-            var historyPreviewItem = new HistoryPreviewItem
+            var historyPreviewItem = new Ride
             {
                 StartingLocation = bookVehicle.Start,
                 EndingLocation = bookVehicle.Destination,
@@ -50,9 +52,32 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
                 TotalPrice = vehicle.StartPrice + (vehicle.PricePerKM * distance)
             };
 
-            //location
+            var vehicleLocations = new VehicleLocation
+            {
+                CurrentLocation = new Location
+                {
+                    Latitude = vehicle.Location.Latitude,
+                    Longitude = vehicle.Location.Longitude
+                },
 
-            await _unitOfWork._historyPreviewItemRepository.Insert(historyPreviewItem);
+                PassengersLocation = new Location
+                {
+                    Latitude = bookVehicle.Start.Latitude,
+                    Longitude = bookVehicle.Start.Longitude
+                },
+
+                Destination = new Location
+                {
+                    Latitude = bookVehicle.Destination.Latitude,
+                    Longitude = bookVehicle.Destination.Longitude
+                },
+
+                IsPassengerPicked = false
+            };
+
+            _listService.FillList(vehicleLocations);
+
+            await _unitOfWork._rideRepository.Insert(historyPreviewItem);
             _unitOfWork._vehicleRepository.Update(vehicle);
 
             return true;
@@ -108,7 +133,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
             var today = DateTime.Today;
 
-            var historyPrewiew = (await _unitOfWork._historyPreviewItemRepository.GetAllAsync())
+            var historyPrewiew = (await _unitOfWork._rideRepository.GetAllAsync())
                 .Where(x => x.IsArrived && x.PassengerId == passenger.Id && x.VehicleId == vehicle.Id)
                 .FirstOrDefault()
                 ?? throw new NotFoundException($"Passinger with id: {passenger.Id} didn't arrived on destination with vehicle with id: {vehicle.Id}");

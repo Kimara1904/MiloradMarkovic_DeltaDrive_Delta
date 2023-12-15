@@ -7,7 +7,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Repositories.Interfaces
         public IGenericRepository<Passenger> _passengerRepository { get; }
         public IGenericRepository<Vehicle> _vehicleRepository { get; }
         public IGenericRepository<Rate> _rateRepository { get; }
-        public IGenericRepository<HistoryPreviewItem> _historyPreviewItemRepository { get; }
+        public IGenericRepository<Ride> _rideRepository { get; }
         Task Save();
     }
 }

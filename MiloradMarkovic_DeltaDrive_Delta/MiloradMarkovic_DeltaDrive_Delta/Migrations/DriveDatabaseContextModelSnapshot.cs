@@ -59,7 +59,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("History");
+                    b.ToTable("History", (string)null);
                 });
 
             modelBuilder.Entity("MiloradMarkovic_DeltaDrive_Delta.Models.Passenger", b =>
@@ -94,7 +94,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Passengers");
+                    b.ToTable("Passengers", (string)null);
                 });
 
             modelBuilder.Entity("MiloradMarkovic_DeltaDrive_Delta.Models.Rate", b =>
@@ -125,7 +125,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Rates");
+                    b.ToTable("Rates", (string)null);
                 });
 
             modelBuilder.Entity("MiloradMarkovic_DeltaDrive_Delta.Models.Vehicle", b =>
@@ -161,7 +161,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicles", (string)null);
                 });
 
             modelBuilder.Entity("MiloradMarkovic_DeltaDrive_Delta.Models.HistoryPreviewItem", b =>
@@ -178,7 +178,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("MiloradMarkovic_DeltaDrive_Delta.Models.Location", "EndingLocation", b1 =>
+                    b.OwnsOne("MiloradMarkovic_DeltaDrive_Delta.Models.HistoryPreviewItem.EndingLocation#MiloradMarkovic_DeltaDrive_Delta.Models.Location", "EndingLocation", b1 =>
                         {
                             b1.Property<int>("HistoryPreviewItemId")
                                 .HasColumnType("int");
@@ -193,13 +193,13 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
 
                             b1.HasKey("HistoryPreviewItemId");
 
-                            b1.ToTable("History");
+                            b1.ToTable("History", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("HistoryPreviewItemId");
                         });
 
-                    b.OwnsOne("MiloradMarkovic_DeltaDrive_Delta.Models.Location", "StartingLocation", b1 =>
+                    b.OwnsOne("MiloradMarkovic_DeltaDrive_Delta.Models.HistoryPreviewItem.StartingLocation#MiloradMarkovic_DeltaDrive_Delta.Models.Location", "StartingLocation", b1 =>
                         {
                             b1.Property<int>("HistoryPreviewItemId")
                                 .HasColumnType("int");
@@ -214,7 +214,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
 
                             b1.HasKey("HistoryPreviewItemId");
 
-                            b1.ToTable("History");
+                            b1.ToTable("History", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("HistoryPreviewItemId");
@@ -252,7 +252,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
 
             modelBuilder.Entity("MiloradMarkovic_DeltaDrive_Delta.Models.Vehicle", b =>
                 {
-                    b.OwnsOne("MiloradMarkovic_DeltaDrive_Delta.Models.Location", "Location", b1 =>
+                    b.OwnsOne("MiloradMarkovic_DeltaDrive_Delta.Models.Vehicle.Location#MiloradMarkovic_DeltaDrive_Delta.Models.Location", "Location", b1 =>
                         {
                             b1.Property<int>("VehicleId")
                                 .HasColumnType("int");
@@ -265,7 +265,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Migrations
 
                             b1.HasKey("VehicleId");
 
-                            b1.ToTable("Vehicles");
+                            b1.ToTable("Vehicles", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("VehicleId");

@@ -11,17 +11,17 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Repositories
         public IGenericRepository<Passenger> _passengerRepository { get; } = null!;
         public IGenericRepository<Vehicle> _vehicleRepository { get; } = null!;
         public IGenericRepository<Rate> _rateRepository { get; } = null!;
-        public IGenericRepository<HistoryPreviewItem> _historyPreviewItemRepository { get; } = null!;
+        public IGenericRepository<Ride> _rideRepository { get; } = null!;
 
         public UnitOfWork(DbContext context, IGenericRepository<Passenger> passengerRepository,
             IGenericRepository<Vehicle> vehicleRepository, IGenericRepository<Rate> rateRepository,
-            IGenericRepository<HistoryPreviewItem> historyPreviewItemRepository)
+            IGenericRepository<Ride> rideRepository)
         {
             _context = context;
             _passengerRepository = passengerRepository;
             _vehicleRepository = vehicleRepository;
             _rateRepository = rateRepository;
-            _historyPreviewItemRepository = historyPreviewItemRepository;
+            _rideRepository = rideRepository;
         }
 
         public void Dispose()

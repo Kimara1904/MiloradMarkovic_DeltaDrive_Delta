@@ -9,6 +9,6 @@
         public string LastName { get; set; } = null!;
         public DateTime Birthday { get; set; }
         public virtual List<Rate> Rates { get; set; } = null!;
-        public virtual List<HistoryPreviewItem> HistoryPreviews { get; set; } = null!;
+        public virtual List<Ride> HistoryPreviews { get; set; } = null!;
     }
 }
