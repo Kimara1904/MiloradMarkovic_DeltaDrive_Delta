@@ -28,8 +28,8 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
         {
             var passenger = await _unitOfWork._passengerRepository.FindAsync(PassengerId)
                 ?? throw new NotFoundException("This user doesn't exist.");
-            var vehicleQuery = await _unitOfWork._vehicleRepository.GetAllAsync();
-            var vehicle = vehicleQuery.Where(x => x.Id == bookVehicle.Id && !x.IsBooked).FirstOrDefault()
+            var vehicle = (await _unitOfWork._vehicleRepository.GetAllAsync())
+                .Where(x => x.Id == bookVehicle.Id && !x.IsBooked).FirstOrDefault()
                 ?? throw new NotFoundException($"There is no available vehicle with id: {bookVehicle.Id}.");
 
             double random = new Random().NextDouble();
@@ -54,11 +54,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
             var vehicleLocations = new VehicleLocation
             {
-                CurrentLocation = new Location
-                {
-                    Latitude = vehicle.Location.Latitude,
-                    Longitude = vehicle.Location.Longitude
-                },
+                VehicleId = vehicle.Id,
 
                 PassengersLocation = new Location
                 {
@@ -79,6 +75,8 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
             await _unitOfWork._rideRepository.Insert(historyPreviewItem);
             _unitOfWork._vehicleRepository.Update(vehicle);
+
+            await _unitOfWork.Save();
 
             return true;
         }
@@ -111,7 +109,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
         public async Task<List<RatesPreviewDTO>> GetRatesPreview(int id)
         {
             var previews = (await _unitOfWork._rateRepository.GetAllAsync())
-                .Where(x => x.Id == id)
+                .Where(x => x.VehicleId == id)
                 .Include(x => x.Vehicle)
                 .Include(x => x.Passenger)
                 .ToList();
@@ -134,7 +132,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
             var today = DateTime.Today;
 
             var historyPrewiew = (await _unitOfWork._rideRepository.GetAllAsync())
-                .Where(x => x.IsArrived && x.PassengerId == passenger.Id && x.VehicleId == vehicle.Id)
+                .Where(x => x.IsArrived && !x.IsRated && x.PassengerId == passenger.Id && x.VehicleId == vehicle.Id)
                 .FirstOrDefault()
                 ?? throw new NotFoundException($"Passinger with id: {passenger.Id} didn't arrived on destination with vehicle with id: {vehicle.Id}");
 
@@ -142,7 +140,10 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
             rate.VehicleId = vehicle.Id;
             rate.PassengersId = passenger.Id;
 
+            historyPrewiew.IsRated = true;
+
             await _unitOfWork._rateRepository.Insert(rate);
+            _unitOfWork._rideRepository.Update(historyPrewiew);
             await _unitOfWork.Save();
         }
     }

@@ -22,6 +22,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Infrastructure.Configurations
             builder.Property(x => x.TotalPrice).IsRequired();
             builder.Property(x => x.StartTime).IsRequired();
             builder.Property(x => x.IsArrived).HasDefaultValue(false);
+            builder.Property(x => x.IsRated).HasDefaultValue(false);
             builder.HasOne(x => x.Passenger).WithMany(p => p.HistoryPreviews).HasForeignKey(x => x.PassengerId);
             builder.HasOne(x => x.Vehicle).WithMany(v => v.HistoryPreviews).HasForeignKey(x => x.VehicleId);
         }

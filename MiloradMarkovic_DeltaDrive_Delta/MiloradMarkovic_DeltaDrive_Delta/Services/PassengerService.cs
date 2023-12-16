@@ -19,7 +19,8 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
         public async Task<List<HistoryPreviewDTO>> GetHistoryPreview(int id)
         {
-            var history = (await _unitOfWork._rideRepository.GetAllAsync())
+            var history = (await _unitOfWork._rideRepository
+                .GetAllAsync())
                 .Where(x => x.PassengerId == id)
                 .Include(x => x.Passenger)
                 .Include(x => x.Vehicle)

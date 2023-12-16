@@ -30,8 +30,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
         public async Task<string> Login(LoginDTO login)
         {
-            var passengers = await _unitOfWork._passengerRepository.GetAllAsync();
-            var passenger = passengers
+            var passenger = (await _unitOfWork._passengerRepository.GetAllAsync())
                 .Where(p => p.Email.Equals(login.Email) && _passwordHasher.VerifyHashedPassword(p, p.Password, login.Password) == PasswordVerificationResult.Success)
                 .FirstOrDefault() ?? throw new NotFoundException($"There is no user with email: {login.Email} and password {login.Password}.");
 
@@ -57,8 +56,8 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
         public async Task Register(RegisterDTO newPassenger)
         {
-            var passengers = await _unitOfWork._passengerRepository.GetAllAsync();
-            var passenger = passengers.Where(p => p.Email.Equals(newPassenger.Email)).FirstOrDefault();
+            var passenger = (await _unitOfWork._passengerRepository.GetAllAsync())
+                .Where(p => p.Email.Equals(newPassenger.Email)).FirstOrDefault();
 
             if (passenger != null)
             {

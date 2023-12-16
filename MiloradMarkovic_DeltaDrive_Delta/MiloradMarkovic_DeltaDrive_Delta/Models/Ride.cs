@@ -13,5 +13,6 @@
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public bool IsArrived { get; set; }
+        public bool IsRated { get; set; }
     }
 }

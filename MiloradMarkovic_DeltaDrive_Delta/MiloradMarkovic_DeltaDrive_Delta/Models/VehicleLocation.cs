@@ -3,7 +3,6 @@
     public class VehicleLocation
     {
         public int VehicleId { get; set; }
-        public Location CurrentLocation { get; set; } = null!;
         public Location PassengersLocation { get; set; } = null!;
         public Location Destination { get; set; } = null!;
         public bool IsPassengerPicked { get; set; }

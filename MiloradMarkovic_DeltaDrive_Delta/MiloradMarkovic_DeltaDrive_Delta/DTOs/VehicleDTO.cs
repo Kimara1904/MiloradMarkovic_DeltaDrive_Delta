@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Brand { get; set; } = null!;
-        public string DriverFirstName { get; set; } = null!;
-        public string DriverLastName { get; set; } = null!;
+        public string DriversFirstName { get; set; } = null!;
+        public string DriversLastName { get; set; } = null!;
     }
 }

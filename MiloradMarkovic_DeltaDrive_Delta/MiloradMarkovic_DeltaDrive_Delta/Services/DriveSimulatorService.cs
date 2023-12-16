@@ -22,55 +22,58 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
         protected override async Task<Task> ExecuteAsync(CancellationToken stoppingToken)
         {
-            stoppingToken.ThrowIfCancellationRequested();
-
-            using var scope = _scopeFactory.CreateScope();
-            var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-
-            if (_listService.List.Any())
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var task = _listService.List.Select(async item =>
+                using var scope = _scopeFactory.CreateScope();
+                var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+                if (_listService.List.Any())
                 {
-                    Location newLocation = null;
-                    var vehicle = await unitOfWork._vehicleRepository.FindAsync(item.VehicleId)
-                        ?? throw new InternalServerErrorException("Error with simulation: Vehicle doesn't exist.");
-
-                    var ride = (await unitOfWork._rideRepository.GetAllAsync())
-                        .Where(x => !x.IsArrived && IsSameLocation(x.StartingLocation, item.PassengersLocation)
-                        && IsSameLocation(x.EndingLocation, item.Destination) && x.VehicleId == item.VehicleId).FirstOrDefault()
-                        ?? throw new InternalServerErrorException("Error with simulation: Ride doesn't exist.");
-
-                    if (item.IsPassengerPicked)
+                    var task = _listService.List.Select(async item =>
                     {
-                        newLocation = await CalculateNewLocation(item.CurrentLocation, item.Destination);
-                    }
-                    else
-                    {
-                        newLocation = await CalculateNewLocation(item.CurrentLocation, item.PassengersLocation);
-                    }
+                        Location newLocation = null;
+                        var vehicle = await unitOfWork._vehicleRepository.FindAsync(item.VehicleId)
+                            ?? throw new InternalServerErrorException("Error with simulation: Vehicle doesn't exist.");
 
-                    if (IsSameLocation(newLocation, item.PassengersLocation))
-                    {
-                        item.IsPassengerPicked = true;
-                    }
-                    else if (IsSameLocation(newLocation, item.Destination))
-                    {
-                        _listService.EmptyList(item);
-                        vehicle.IsBooked = false;
-                        ride.EndTime = DateTime.UtcNow;
-                    }
+                        var ride = (await unitOfWork._rideRepository.GetAllAsync())
+                            .Where(x => !x.IsArrived && IsSameLocation(x.StartingLocation, item.PassengersLocation)
+                            && IsSameLocation(x.EndingLocation, item.Destination) && x.VehicleId == item.VehicleId).FirstOrDefault()
+                            ?? throw new InternalServerErrorException("Error with simulation: Ride doesn't exist.");
 
-                    vehicle.Location.Latitude = newLocation.Latitude;
-                    vehicle.Location.Longitude = newLocation.Longitude;
-                    unitOfWork._vehicleRepository.Update(vehicle);
-                    unitOfWork._rideRepository.Update(ride);
-                });
+                        if (item.IsPassengerPicked)
+                        {
+                            newLocation = await CalculateNewLocation(vehicle.Location, item.Destination);
+                        }
+                        else
+                        {
+                            newLocation = await CalculateNewLocation(vehicle.Location, item.PassengersLocation);
+                        }
 
-                await Task.WhenAll(task);
+                        if (IsSameLocation(newLocation, item.PassengersLocation))
+                        {
+                            item.IsPassengerPicked = true;
+                        }
+                        else if (IsSameLocation(newLocation, item.Destination))
+                        {
+                            _listService.EmptyList(item);
+                            vehicle.IsBooked = false;
+                            ride.EndTime = DateTime.UtcNow;
+                            ride.IsArrived = true;
+                        }
 
-                await unitOfWork.Save();
+                        vehicle.Location.Latitude = newLocation.Latitude;
+                        vehicle.Location.Longitude = newLocation.Longitude;
+                        unitOfWork._vehicleRepository.Update(vehicle);
+                        unitOfWork._rideRepository.Update(ride);
+                    });
+
+                    await Task.WhenAll(task);
+
+                    await unitOfWork.Save();
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(5), CancellationToken.None);
             }
-
             return Task.CompletedTask;
         }
 
@@ -80,7 +83,7 @@ namespace MiloradMarkovic_DeltaDrive_Delta.Services
 
             await Task.Run(() =>
             {
-                var distanceKM = _geoCalculator.CalculateDistance(current.Latitude, current.Longitude, destination.Latitude, destination.Longitude);
+                var distanceKM = _geoCalculator.CalculateDistance(current.Latitude, current.Longitude, destination.Latitude, destination.Longitude) / 1000;
                 var distanceTraveled = 60.0 * (5.0 / 3600.0); // distance = speed * (timeInSeconds / 3600 -> timeInHours)
                 var ratio = distanceTraveled / distanceKM;
 
